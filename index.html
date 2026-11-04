@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polling Database · Europe Elects</title>
+<meta name="description" content="Access the Europe Elects polling database: coverage by country, fees and terms for academic access.">
+<style>
+#ee-pd{
+  --ink:#0f1b3d; --ink-2:#3b4766; --muted:#6b7591; --line:#e3e7f0; --bg:#f6f8fc; --card:#fff;
+  --accent:#1f4fd8; --accent-soft:#e8eefc; --gold:#f5c400; --ok:#127a4a; --ok-soft:#e5f5ec; --off:#9aa2b8;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink); line-height:1.55; font-size:16px; max-width:1040px; margin:0 auto; padding:8px 16px 40px;
+}
+#ee-pd *{box-sizing:border-box}
+#ee-pd h1,#ee-pd h2,#ee-pd h3{line-height:1.2;margin:0;color:var(--ink)}
+#ee-pd a{color:var(--accent)}
+#ee-pd .hero{padding:36px 0 28px;border-bottom:1px solid var(--line);margin-bottom:28px}
+#ee-pd .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+#ee-pd .eyebrow::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px #fff3bf}
+#ee-pd h1{font-size:clamp(30px,4.5vw,44px);margin:10px 0 12px;letter-spacing:-.02em}
+#ee-pd .lead{font-size:18px;color:var(--ink-2);max-width:720px;margin:0}
+#ee-pd .stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+#ee-pd .stat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+#ee-pd .stat b{display:block;font-size:22px}
+#ee-pd .stat span{font-size:13px;color:var(--muted)}
+
+#ee-pd .paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:36px}
+#ee-pd .path{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px}
+#ee-pd .path h3{font-size:16px;margin-bottom:6px}
+#ee-pd .path p{margin:0;font-size:14.5px;color:var(--ink-2)}
+#ee-pd .path .tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent);margin-bottom:10px}
+
+#ee-pd section{margin-bottom:40px}
+#ee-pd .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+#ee-pd h2{font-size:24px;letter-spacing:-.01em}
+#ee-pd .sub{color:var(--muted);font-size:14px;margin:4px 0 0}
+
+#ee-pd .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:860px){#ee-pd .layout{grid-template-columns:1fr}}
+
+#ee-pd .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#ee-pd input[type=search],#ee-pd input[type=email]{font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+#ee-pd input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+#ee-pd .tools input[type=search]{flex:1;min-width:180px;width:auto}
+#ee-pd .chip{font:inherit;font-size:14px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
+#ee-pd .chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+#ee-pd .table{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#ee-pd .group{padding:9px 16px;background:var(--bg);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+#ee-pd .row{display:grid;grid-template-columns:28px 44px 1fr auto;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line)}
+#ee-pd .row:last-child{border-bottom:0}
+#ee-pd label.row{cursor:pointer}
+#ee-pd label.row:hover{background:#fafbff}
+#ee-pd .row.is-sel{background:var(--accent-soft)}
+#ee-pd .row.is-off{color:var(--off)}
+#ee-pd .row input{width:17px;height:17px;accent-color:var(--accent);margin:0}
+#ee-pd .iso{font-size:11.5px;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 0;text-align:center}
+#ee-pd .is-off .iso{color:var(--off)}
+#ee-pd .name{font-size:15px}
+#ee-pd .pill{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+#ee-pd .pill.ok{background:var(--ok-soft);color:var(--ok)}
+#ee-pd .pill.ask{background:#fff6d6;color:#8a6a00}
+#ee-pd .pill.no{background:transparent;color:var(--off);font-weight:500;white-space:normal;text-align:right}
+#ee-pd .empty{padding:24px 16px;color:var(--muted);text-align:center}
+#ee-pd .note{font-size:13.5px;color:var(--muted);margin:10px 2px 0}
+
+#ee-pd .calc{position:sticky;top:16px;background:var(--ink);color:#fff;border-radius:16px;padding:20px}
+#ee-pd .calc h3{color:#fff;font-size:17px;margin-bottom:4px}
+#ee-pd .calc .small{font-size:13px;color:#b8c1dc;margin:0 0 14px}
+#ee-pd .total{display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid #2a3760;border-bottom:1px solid #2a3760;padding:12px 0;margin:12px 0}
+#ee-pd .total b{font-size:30px;letter-spacing:-.02em}
+#ee-pd .total span{font-size:13px;color:#b8c1dc}
+#ee-pd .sel-list{display:grid;gap:6px;min-height:24px}
+#ee-pd .sel-item{display:grid;grid-template-columns:1fr auto auto auto auto;align-items:center;gap:8px;background:#16234a;border-radius:9px;padding:6px 8px 6px 10px;font-size:13.5px}
+#ee-pd .sel-item .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ee-pd .sel-item select{font:inherit;font-size:13px;background:#26345e;color:#fff;border:1px solid #3a4a7c;border-radius:6px;padding:2px 4px}
+#ee-pd .sel-item .yr{font-size:12.5px;color:#b8c1dc;white-space:nowrap}
+#ee-pd .sel-item .amt{font-weight:600;min-width:58px;text-align:right}
+#ee-pd .sel-item button{font:inherit;font-size:14px;line-height:1;border:0;border-radius:6px;width:22px;height:22px;background:transparent;color:#8f9abb;cursor:pointer}
+#ee-pd .sel-item button:hover{background:#c0392b;color:#fff}
+#ee-pd .sel-list .none{font-size:13px;color:#8f9abb}
+#ee-pd .calc label.lbl{display:block;font-size:12.5px;color:#b8c1dc;margin:14px 0 6px}
+#ee-pd .calc input[type=email]{background:#16234a;border-color:#2a3760;color:#fff}
+#ee-pd .ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#16234a;border:1px dashed #3a4a7c;border-radius:10px;padding:10px 12px;word-break:break-word;color:#e9eeff;min-height:42px}
+#ee-pd .ref.placeholder{color:#7f8bb0}
+
+#ee-pd .btn{font:inherit;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;border-radius:9px;padding:7px 12px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink)}
+#ee-pd .btn:hover{border-color:var(--accent);color:var(--accent)}
+#ee-pd .btn.light{background:#26345e;border-color:#26345e;color:#fff;margin-top:8px}
+#ee-pd .btn.light:hover{background:#31437a;color:#fff}
+#ee-pd .btn.done{border-color:var(--ok);color:var(--ok)}
+#ee-pd .btn.light.done{background:var(--ok);border-color:var(--ok);color:#fff}
+
+#ee-pd .bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+#ee-pd .field{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+#ee-pd .field small{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+#ee-pd .field code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;color:var(--ink);background:none;padding:0}
+#ee-pd .field .v{font-size:15px}
+#ee-pd .callout{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;font-size:14.5px;color:var(--ink-2);margin-top:14px}
+
+#ee-pd .steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+#ee-pd .steps li{counter-increment:s;position:relative;padding:12px 14px 12px 52px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-size:15px}
+#ee-pd .steps li::before{content:counter(s);position:absolute;left:14px;top:11px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center}
+
+#ee-pd details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-bottom:10px}
+#ee-pd summary{cursor:pointer;font-weight:600;padding:14px 0;list-style:none;display:flex;justify-content:space-between}
+#ee-pd summary::-webkit-details-marker{display:none}
+#ee-pd summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted)}
+#ee-pd details[open] summary::after{content:"−"}
+#ee-pd details p,#ee-pd details ul{margin:0 0 14px;font-size:15px;color:var(--ink-2)}
+#ee-pd details ul{padding-left:20px}
+
+#ee-pd .cite{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+#ee-pd .cite p{margin:0;flex:1;font-size:15px}
+#ee-pd .contact{text-align:center;padding:26px;border-radius:16px;background:var(--accent-soft)}
+#ee-pd .contact p{margin:6px 0 0;color:var(--ink-2)}
+#ee-pd .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body style="margin:0;background:#fff">
+<div id="ee-pd">
+
+  <header class="hero">
+    <span class="eyebrow">Europe Elects · Data</span>
+    <h1>Polling Database</h1>
+    <p class="lead">Polling averages for every European country and territory, from the first poll we track to today. Browse them for free on our country pages, or request the underlying data as a <code>.csv</code> for academic research.</p>
+    <div class="stats" id="ee-stats"></div>
+  </header>
+
+  <div class="paths">
+    <div class="path">
+      <span class="tag">Free</span>
+      <h3>Just browsing?</h3>
+      <p>Click a country flag in the top banner to see its polling average.</p>
+    </div>
+    <div class="path">
+      <span class="tag">€7.50 per country-year</span>
+      <h3>Students &amp; academics</h3>
+      <p>Get the polling data as a <code>.csv</code> for non-commercial research. Pick your countries and years below.</p>
+    </div>
+    <div class="path">
+      <span class="tag">On request</span>
+      <h3>Commercial use</h3>
+      <p>If you're acting for a commercial entity, contact us first at <a href="mailto:contact@europeelects.eu">contact@europeelects.eu</a>.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <div>
+        <h2>Coverage &amp; request</h2>
+        <p class="sub">The year shows when each polling average begins. Tick the countries you need, then choose the years in the panel.</p>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="tools">
+          <label class="sr" for="ee-q">Search countries</label>
+          <input id="ee-q" type="search" placeholder="Search countries…" autocomplete="off">
+          <button class="chip" data-f="all" aria-pressed="true">All</button>
+          <button class="chip" data-f="avail" aria-pressed="false">Available</button>
+          <button class="chip" data-f="terr" aria-pressed="false">Territories</button>
+        </div>
+        <div class="table" id="ee-table" role="list"></div>
+        <p class="note">An average can be extended back further if needed. A start year of, say, 2016 doesn't guarantee that the whole of 2016 is covered.</p>
+      </div>
+
+      <aside class="calc" aria-live="polite">
+        <h3>Your request</h3>
+        <p class="small">€7.50 per country-year. Set the first year for each country. Data runs to the present, and the current year counts as one year.</p>
+        <div class="sel-list" id="ee-sel"></div>
+        <div class="total"><span id="ee-count">0 country-years × €7.50</span><b id="ee-total">€0.00</b></div>
+        <label class="lbl" for="ee-mail">Your institutional university email</label>
+        <input id="ee-mail" type="email" placeholder="max.mustermann@university.com" autocomplete="email">
+        <label class="lbl">Transfer reference</label>
+        <div class="ref placeholder" id="ee-ref">Select countries and enter your email</div>
+        <button class="btn light" id="ee-copyref" type="button">Copy reference</button>
+      </aside>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div><h2>How to request</h2></div></div>
+    <ol class="steps">
+      <li>Choose your countries and years above and note the total (€7.50 × the number of country-years; e.g. Austria 2018–2026 is 9 country-years, €67.50).</li>
+      <li>Transfer the total to the account below, putting your institutional email and the countries and years in the reference, e.g. <code>max.mustermann(at)university.com; Austria 2018-2026, Germany 2020-2026</code>.</li>
+      <li>Allow up to seven business days after we receive payment. We send the data to the email address in your reference.</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sec-head"><div><h2>Bank details</h2></div></div>
+    <div class="bank">
+      <div class="field"><div><small>Account holder</small><span class="v">Europe Elects UG</span></div><button class="btn" data-copy="Europe Elects UG" type="button">Copy</button></div>
+      <div class="field"><div><small>IBAN</small><code>DE15 5739 1800 0022 1317 02</code></div><button class="btn" data-copy="DE15573918000022131702" type="button">Copy</button></div>
+      <div class="field"><div><small>BIC</small><code>GENODE51WW1</code></div><button class="btn" data-copy="GENODE51WW1" type="button">Copy</button></div>
+      <div class="field"><div><small>Bank</small><span class="v">Volksbank Westerwald eG</span></div></div>
+    </div>
+    <div class="callout"><strong>Paying from outside the EU?</strong> You can pay through our <a href="https://www.patreon.com/EuropeElects" target="_blank" rel="noopener">Patreon page</a> instead. Fees are non-refundable.</div>
+    <div class="callout"><strong>Reduced or waived fees for students.</strong> Send <a href="mailto:contact@europeelects.eu">contact@europeelects.eu</a> a well-defined research proposal (at least 400 words, with project title, research question(s), methodology or data usage plan, expected outcomes, affiliation and supervisor) along with proof of enrolment.</div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div><h2>Terms of use</h2></div></div>
+    <details open>
+      <summary>Who can use the data</summary>
+      <p>Access is only for non-commercial academic use by students and researchers affiliated with academic institutions.</p>
+    </details>
+    <details>
+      <summary>Attribution</summary>
+      <p>Any use of the data must credit Europe Elects and give the full poll metadata in any publication, presentation or analysis:</p>
+      <ul><li>pollster</li><li>commissioner (if applicable)</li><li>fieldwork dates</li><li>sample size</li><li>methodology</li></ul>
+    </details>
+    <details>
+      <summary>Redistribution</summary>
+      <p>You may not redistribute or resell the dataset. By requesting the data, you agree to these terms.</p>
+    </details>
+    <details>
+      <summary>Eligibility &amp; verification</summary>
+      <p>Europe Elects UG may decline requests that don't meet our eligibility or verification criteria. A payment doesn't guarantee delivery if the information given is incomplete or invalid.</p>
+    </details>
+    <details>
+      <summary>Share your work</summary>
+      <p>Please consider sending us any publication that uses the data. If you'd like, we'll consider submissions to <a href="mailto:contact@europeelects.eu">contact@europeelects.eu</a> for our social media to help spread the research.</p>
+    </details>
+  </section>
+
+  <section>
+    <div class="sec-head"><div><h2>Preferred citation</h2></div></div>
+    <div class="cite">
+      <p id="ee-cite">Europe Elects (2026). <em>Europe Elects party polling database</em> [Private data set]. GitHub. https://github.com/Europe-Elects/apopod</p>
+      <button class="btn" id="ee-copycite" type="button">Copy</button>
+    </div>
+  </section>
+
+  <div class="contact">
+    <h3>Questions?</h3>
+    <p>Email us at <a href="mailto:contact@europeelects.eu">contact@europeelects.eu</a></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  // [name, ISO code, start year | null, note]; group: c = country, t = territory
+  var C = [
+    ["Albania","AL",2017],["Andorra","AD",2015],["Armenia","AM",2017],["Austria","AT",2018],
+    ["Azerbaijan","AZ",null,"No representative polling · no democracy"],["Belarus","BY",null,"No democracy"],
+    ["Belgium","BE",null,"No representative national polling"],["Bosnia and Herzegovina","BA",null,"No representative national polling"],
+    ["Bulgaria","BG",2017],["Croatia","HR",2018],["Cyprus","CY",2018],["Czechia","CZ",2017],
+    ["Denmark","DK",2018],["Estonia","EE",2018],["Finland","FI",2018],["France","FR","ask"],
+    ["Georgia","GE",2015],["Germany","DE",2017],["Greece","GR",2018],["Holy See","VA",null,"No representative polling · no democracy"],
+    ["Hungary","HU",2018],["Iceland","IS",2016],["Ireland","IE",2016],["Italy","IT",2018],
+    ["Latvia","LV",2018],["Liechtenstein","LI",2024],["Lithuania","LT",2018],["Luxembourg","LU",2016],
+    ["Malta","MT",2016],["Moldova","MD",2021],["Monaco","MC",null,"No representative polling"],["Montenegro","ME",2016],
+    ["Netherlands","NL",2017],["North Macedonia","MK",2019],["Norway","NO",2017],["Poland","PL",2018],
+    ["Portugal","PT",2018],["Romania","RO",2017],["Russian Federation","RU",null,"No democracy"],
+    ["San Marino","SM",null,"No representative polling"],["Serbia","RS",2022],["Slovakia","SK",2016],
+    ["Slovenia","SI",2016],["Spain","ES",2016],["Sweden","SE",2018],["Switzerland","CH",2017],
+    ["Türkiye","TR",2018],["Ukraine","UA",2019],["United Kingdom","GB",2018]
+  ];
+  var T = [
+    ["Åland Islands","AX",2019],["Faroe Islands","FO",2020],["Gibraltar","GI",2023],["Greenland","GL",2018],
+    ["Guernsey","GG",null,"No representative polling"],["Isle of Man","IM",null,"No representative polling"],
+    ["Jersey","JE",null,"No representative polling"]
+  ];
+  var FEE = 7.5, NOW = new Date().getFullYear(), sel = [], filter = "all", q = "";
+  // sel: [{name, from}]
+  function fmt(n){return n.toFixed(2)}
+  var $ = function(id){return document.getElementById(id)};
+  var norm = function(g){return function(r){return [r[0], r[1], r[2], r[3]||"", g]}};
+  var all = C.map(norm("c")).concat(T.map(norm("t")));
+  var avail = function(r){return r[2] !== null};
+
+  var nAvail = all.filter(avail).length;
+  var earliest = Math.min.apply(null, all.filter(function(r){return typeof r[2]==="number"}).map(function(r){return r[2]}));
+  $("ee-stats").innerHTML =
+    '<div class="stat"><b>'+nAvail+'</b><span>countries &amp; territories</span></div>'+
+    '<div class="stat"><b>'+earliest+'</b><span>earliest averages</span></div>'+
+    '<div class="stat"><b>€'+fmt(FEE)+'</b><span>per country-year, academic</span></div>';
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+  var startOf = {}; all.forEach(function(r){ startOf[r[0]] = r[2]; });
+  function isSel(n){ return sel.some(function(x){return x.name===n}); }
+  function selectable(r){ return typeof r[2]==="number"; }
+
+  function rowHTML(r){
+    var on = selectable(r), checked = isSel(r[0]);
+    var badge = r[2]==="ask" ? '<span class="pill ask">Ask us</span>'
+              : on ? '<span class="pill ok">Since '+r[2]+'</span>'
+              : '<span class="pill no">'+esc(r[3])+'</span>';
+    if(!on) return '<div class="row is-off" role="listitem"><span></span><span class="iso">'+r[1]+'</span><span class="name">'+esc(r[0])+'</span>'+badge+'</div>';
+    return '<label class="row'+(checked?' is-sel':'')+'" role="listitem"><input type="checkbox" value="'+esc(r[0])+'"'+(checked?' checked':'')+'><span class="iso">'+r[1]+'</span><span class="name">'+esc(r[0])+'</span>'+badge+'</label>';
+  }
+
+  function render(){
+    var match = function(r){
+      if(q && r[0].toLowerCase().indexOf(q) < 0 && r[1].toLowerCase() !== q) return false;
+      if(filter==="avail" && !avail(r)) return false;
+      if(filter==="terr" && r[4]!=="t") return false;
+      return true;
+    };
+    var c = all.filter(function(r){return r[4]==="c" && match(r)});
+    var t = all.filter(function(r){return r[4]==="t" && match(r)});
+    var h = "";
+    if(c.length) h += '<div class="group">Countries</div>' + c.map(rowHTML).join("");
+    if(t.length) h += '<div class="group">Territories</div>' + t.map(rowHTML).join("");
+    $("ee-table").innerHTML = h || '<div class="empty">No matches.</div>';
+    renderSel();
+  }
+
+  function years(x){ return NOW - x.from + 1; }
+
+  function renderSel(){
+    $("ee-sel").innerHTML = sel.length ? sel.map(function(x){
+      var opts = "";
+      for(var y = startOf[x.name]; y <= NOW; y++) opts += '<option value="'+y+'"'+(y===x.from?' selected':'')+'>'+y+'</option>';
+      return '<div class="sel-item"><span class="nm" title="'+esc(x.name)+'">'+esc(x.name)+'</span>'+
+        '<select data-from="'+esc(x.name)+'" aria-label="First year for '+esc(x.name)+'">'+opts+'</select>'+
+        '<span class="yr">–'+NOW+' · '+years(x)+' yr'+(years(x)>1?'s':'')+'</span>'+
+        '<span class="amt">€'+fmt(years(x)*FEE)+'</span>'+
+        '<button type="button" data-rm="'+esc(x.name)+'" title="Remove" aria-label="Remove '+esc(x.name)+'">×</button></div>';
+    }).join("") : '<span class="none">No countries selected yet</span>';
+    update();
+  }
+
+  function update(){
+    var cy = sel.reduce(function(a,x){return a+years(x)},0);
+    $("ee-count").textContent = cy + (cy===1?" country-year":" country-years") + " × €" + fmt(FEE);
+    $("ee-total").textContent = "€" + fmt(cy*FEE);
+    var mail = $("ee-mail").value.trim().replace("@","(at)");
+    var ref = $("ee-ref");
+    if(sel.length && mail){
+      ref.textContent = mail + "; " + sel.map(function(x){return x.name+" "+x.from+"-"+NOW}).join(", ");
+      ref.classList.remove("placeholder");
+    } else { ref.textContent = !sel.length ? "Select countries and enter your email" : "Enter your email"; ref.classList.add("placeholder"); }
+  }
+
+  var order = all.map(function(r){return r[0]});
+  $("ee-table").addEventListener("change", function(e){
+    if(e.target.type!=="checkbox") return;
+    var v = e.target.value;
+    sel = sel.filter(function(x){return x.name!==v});
+    if(e.target.checked) sel.push({name:v, from:startOf[v]});
+    sel.sort(function(a,b){return order.indexOf(a.name)-order.indexOf(b.name)});
+    e.target.closest(".row").classList.toggle("is-sel", e.target.checked);
+    renderSel();
+  });
+  $("ee-sel").addEventListener("change", function(e){
+    var n = e.target.getAttribute("data-from"); if(!n) return;
+    sel.forEach(function(x){ if(x.name===n) x.from = +e.target.value; });
+    renderSel();
+  });
+  $("ee-sel").addEventListener("click", function(e){
+    var v = e.target.getAttribute("data-rm"); if(!v) return;
+    sel = sel.filter(function(x){return x.name!==v}); render();
+  });
+  $("ee-q").addEventListener("input", function(){ q = this.value.trim().toLowerCase(); render(); });
+  Array.prototype.forEach.call(document.querySelectorAll("#ee-pd .chip"), function(b){
+    b.addEventListener("click", function(){
+      filter = b.getAttribute("data-f");
+      document.querySelectorAll("#ee-pd .chip").forEach(function(x){x.setAttribute("aria-pressed", x===b)});
+      render();
+    });
+  });
+  $("ee-mail").addEventListener("input", update);
+
+  function copy(text, btn){
+    var done = function(){ var o = btn.textContent; btn.textContent = "Copied ✓"; btn.classList.add("done");
+      setTimeout(function(){ btn.textContent = o; btn.classList.remove("done"); }, 1600); };
+    if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(text).then(done, fallback); } else fallback();
+    function fallback(){ var t=document.createElement("textarea"); t.value=text; t.style.position="fixed"; t.style.opacity="0";
+      document.body.appendChild(t); t.select(); try{document.execCommand("copy"); done();}catch(e){} document.body.removeChild(t); }
+  }
+  document.querySelectorAll("#ee-pd [data-copy]").forEach(function(b){ b.addEventListener("click", function(){ copy(b.getAttribute("data-copy"), b); }); });
+  $("ee-copycite").addEventListener("click", function(){ copy($("ee-cite").textContent, this); });
+  $("ee-copyref").addEventListener("click", function(){
+    if($("ee-ref").classList.contains("placeholder")){ $("ee-mail").focus(); return; }
+    copy($("ee-ref").textContent, this);
+  });
+
+  render();
+
+  // When embedded in an iframe, tell the parent page our height so it can resize.
+  if(window.parent !== window){
+    var send = function(){ window.parent.postMessage({eePollingDbHeight: document.documentElement.scrollHeight}, "*"); };
+    if(window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+    window.addEventListener("load", send); send();
+  }
+})();
+</script>
+</body>
+</html>
